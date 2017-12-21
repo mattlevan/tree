@@ -3,6 +3,7 @@ recl       = React.createClass
 
 module.exports =
   codemirror: require './CodeMirror.coffee'
+  repl:       require './Repl.coffee'
   search:     require './SearchComponent.coffee'
   list:       require './ListComponent.coffee'
   kids:       require './KidsComponent.coffee'
