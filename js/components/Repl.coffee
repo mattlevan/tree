@@ -1,18 +1,20 @@
 recl = React.createClass
-{div,textarea,pre} = React.DOM
+{div,textarea,pre,br} = React.DOM
 
 module.exports = recl
   render: ->
     preNode = pre({ className: 'alert ' + @state.alertClass }, @state.output)
     emptyNode = pre({ className: 'alert' + @state.alertClass, hidden: true })
     partial = if @state.showOutput then preNode else emptyNode
-    div {}, textarea(ref: @setRef), partial
+    div {}, textarea(value: @props.value, ref: @setRef), partial, br {}
   componentDidMount: ->
     CodeMirror.fromTextArea(ReactDOM.findDOMNode(@ta), @state.options)
-  getInitialState: ->
-    input: ''
-    output: ''
+  getDefaultProps:  ->
     solution: ''
+    value: ''
+  getInitialState: ->
+    value: ''
+    output: ''
     showOutput: false
     alertClass: 'alert-info'
     options:
@@ -37,11 +39,11 @@ module.exports = recl
       return
     ).join ''
   cmSend: (cm) ->
-    input = cm.getValue()
-    if input == ''
+    value = cm.getValue()
+    if value == ''
       @hideOutput()
       return
-    @send input, @renderOutput
+    @send value, @renderOutput
     return
   send: (str, cb) ->
     $.ajax(url: '/.repl-json?eval=' + @cleanseUrl(str)).then cb
@@ -49,10 +51,16 @@ module.exports = recl
   renderOutput: (res) ->
     switch Object.keys(res).join(' ')
       when 'good'
-        @setState
-          output: res.good
-          showOutput: true
-          alertClass: 'alert-info'
+        if res.good == @props.solution
+          @setState
+            output: res.good
+            showOutput: true
+            alertClass: 'alert-success'
+        else
+          @setState
+            output: res.good
+            showOutput: true
+            alertClass: 'alert-info'
       when 'bad'
         @setState
           output: res.bad
