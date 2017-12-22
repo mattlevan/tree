@@ -21,8 +21,8 @@ module.exports = recl
       lineNumbers: true
       extraKeys:
         Enter: @cmSend
+        Tab: @betterTab
       tabSize: 2
-      indentWithTabs: false
   setRef: (ref) ->
     @ta = ref
   cleanseUrl: (str) ->
@@ -74,3 +74,8 @@ module.exports = recl
       showOutput: false
       alertClass: 'alert-info'
     return
+  betterTab: (cm) ->
+    if cm.somethingSelected()
+      cm.indentSelection("add")
+    else
+      cm.execCommand("insertSoftTab")
